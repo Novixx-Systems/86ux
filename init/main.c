@@ -110,7 +110,6 @@ static char * envp[] = { "HOME=/home","PATH=/prg","PWD=/", NULL }; // We start a
 void init(void)
 {
 	int i;
-	char username[30];
 	setup();
 	(void) open("/dev/tty0",O_RDWR,0);
 	(void) dup(0);
