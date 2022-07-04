@@ -124,4 +124,6 @@ else
 all:
 	chmod +x include/configure
 	include/configure < include/cfg.in
+docs:
+	doxygen
 endif
