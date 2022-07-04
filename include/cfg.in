@@ -1,0 +1,19 @@
+General setup
+.
+Limit memory to low 16MB
+CONFIG_MAX_16M y/n n
+Multiuser
+CONFIG_MULTIUSER_KERNEL y/n y
+Panic on boot
+CONFIG_BOOT_PANIC y/n n
+:
+Features
+.
+printk() support
+CONFIG_PRINTK y/n y
+:
+Admin Configuration
+.
+Enable panics
+CONFIG_PANICS y/n y
+:

@@ -1,0 +1,66 @@
+#! /bin/sh
+#
+# This script is used to configure the kernel.
+CONFIG=.config~
+CONFIG_H=include/cqx/autoconf.h
+echo "#" > $CONFIG
+echo "# Automatically generated make config: don't edit" >> $CONFIG
+echo "#" >> $CONFIG
+
+echo "/*" > $CONFIG_H
+echo " * Automatically generated C config: don't edit" >> $CONFIG_H
+echo " */" >> $CONFIG_H
+
+next="y"
+old="y"
+
+while read i
+do
+	echo >> $CONFIG
+	echo >> $CONFIG_H
+	echo
+	echo "#" >> $CONFIG
+	echo "/*" >> $CONFIG_H
+	echo "**"
+	while [ "$i" != "." -a "$i" != ":" ]
+	do
+		echo "# "$i >> $CONFIG
+		echo " * "$i >> $CONFIG_H
+		echo "**" $i
+		read i || break
+	done
+	echo "#" >> $CONFIG
+	echo " */" >> $CONFIG_H
+	echo "**"
+	read i || break
+	while [ "$i" != "." -a "$i" != ":" ]
+	do
+		read j ques def || break
+		echo -n $i '('$ques', default='$def')? '
+		read ans < /dev/tty
+		if [ "$ans" = "" ]
+		then
+			ans=$def
+		fi
+		if [ "$ans" = "y" ]
+		then
+			echo $j = $j >> $CONFIG
+			echo "#define" $j 1 >> $CONFIG_H
+			next="y";
+		fi
+		read i || break
+	done
+	old=$next
+	next="y"
+	if [ "$i" = ":" ]
+	then
+		next="n"
+	fi
+done
+
+echo
+echo "The 86ux kernel is now hopefully configured for your setup."
+echo "Run \`make' to start the compilation!"
+echo
+
+exit 0

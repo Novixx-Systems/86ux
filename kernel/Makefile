@@ -1,0 +1,106 @@
+#
+# Makefile for the FREAX-kernel.
+#
+# Note! Dependencies are done automagically by 'make dep', which also
+# removes any old dependencies. DON'T put your own dependencies here
+# unless it's something special (ie not a .c file).
+#
+
+AR	=ar
+AS	=nasm -f elf32
+LD	=ld -m  elf_i386 
+LDFLAGS	=-g #-s -x
+CLANG=clang
+CC	=gcc
+CFLAGS	=-Wall -O -std=gnu89 -fstrength-reduce -fomit-frame-pointer -m32 \
+	-finline-functions -fno-stack-protector -nostdinc -fno-builtin -g -I../include
+CPP	=gcc -E -nostdinc -I../include
+
+CLANG_FLAGS = -Wall -std=gnu89  -fomit-frame-pointer -m32 -finline-functions \
+		-fno-stack-protector -nostdinc -g -I../include -fasm-blocks \
+		-masm=intel  -fasm
+		
+OPTIM_FLAF = -O
+
+
+.SUFFIXES: .asm .llo
+
+.c.o:
+	$(CC) $(CFLAGS) \
+	-c -o $*.o $<
+.asm.o:
+	$(AS) -o $*.o $<
+.c.llo:
+	$(CLANG) $(CLANG_FLAGS) $(OPTIM_FLAF) \
+	-c -o $*.llo $<
+
+OBJS  = system_call.o traps.o asm.o fork.o \
+	panic.o printk.o vsprintf.o tty_io.o console.llo \
+	keyboard.o rs_io.o hd.llo sys.o exit.o serial.llo \
+	mktime.o
+	
+SCHED = sched.llo
+
+kernel.o: $(SCHED) $(OBJS)
+	$(LD) -r -o kernel.o $(SCHED) $(OBJS)
+	sync
+	
+sched.llo: sched.c
+	$(CLANG) $(CLANG_FLAGS) \
+	-c -o $*.llo $<
+
+clean:
+	rm -f core *.o *.a *.llo tmp_make
+	for i in *.c;do rm -f `basename $$i .c`.s;done
+
+dep:
+	sed '/\#\#\# Dependencies/q' < Makefile > tmp_make
+	(for i in *.c;do echo -n `echo $$i | sed 's,\.c,\.s,'`" "; \
+		$(CPP) -M $$i;done) >> tmp_make
+	cp tmp_make Makefile
+
+### Dependencies:
+console.s console.o : console.c ../include/cqx/sched.h ../include/cqx/head.h \
+  ../include/cqx/fs.h ../include/sys/types.h ../include/cqx/mm.h \
+  ../include/cqx/tty.h ../include/termios.h ../include/asm/io.h \
+  ../include/asm/system.h 
+exit.s exit.o : exit.c ../include/errno.h ../include/signal.h \
+  ../include/sys/types.h ../include/sys/wait.h ../include/cqx/sched.h \
+  ../include/cqx/head.h ../include/cqx/fs.h ../include/cqx/mm.h \
+  ../include/cqx/kernel.h ../include/cqx/tty.h ../include/termios.h \
+  ../include/asm/segment.h 
+fork.s fork.o : fork.c ../include/errno.h ../include/cqx/sched.h \
+  ../include/cqx/head.h ../include/cqx/fs.h ../include/sys/types.h \
+  ../include/cqx/mm.h ../include/cqx/kernel.h ../include/asm/segment.h \
+  ../include/asm/system.h 
+hd.s hd.o : hd.c ../include/cqx/config.h ../include/cqx/sched.h \
+  ../include/cqx/head.h ../include/cqx/fs.h ../include/sys/types.h \
+  ../include/cqx/mm.h ../include/cqx/kernel.h ../include/cqx/hdreg.h \
+  ../include/asm/system.h ../include/asm/io.h ../include/asm/segment.h 
+mktime.s mktime.o : mktime.c ../include/time.h 
+panic.s panic.o : panic.c ../include/cqx/kernel.h 
+printk.s printk.o : printk.c ../include/stdarg.h ../include/stddef.h \
+  ../include/cqx/kernel.h 
+sched.s sched.o : sched.c ../include/cqx/sched.h ../include/cqx/head.h \
+  ../include/cqx/fs.h ../include/sys/types.h ../include/cqx/mm.h \
+  ../include/cqx/kernel.h ../include/signal.h ../include/cqx/sys.h \
+  ../include/asm/system.h ../include/asm/io.h ../include/asm/segment.h 
+serial.s serial.o : serial.c ../include/cqx/tty.h ../include/termios.h \
+  ../include/cqx/sched.h ../include/cqx/head.h ../include/cqx/fs.h \
+  ../include/sys/types.h ../include/cqx/mm.h ../include/asm/system.h \
+  ../include/asm/io.h 
+sys.s sys.o : sys.c ../include/errno.h ../include/cqx/sched.h \
+  ../include/cqx/head.h ../include/cqx/fs.h ../include/sys/types.h \
+  ../include/cqx/mm.h ../include/cqx/tty.h ../include/termios.h \
+  ../include/cqx/kernel.h ../include/asm/segment.h ../include/sys/times.h \
+  ../include/sys/utsname.h 
+traps.s traps.o : traps.c ../include/string.h ../include/cqx/head.h \
+  ../include/cqx/sched.h ../include/cqx/fs.h ../include/sys/types.h \
+  ../include/cqx/mm.h ../include/cqx/kernel.h ../include/asm/system.h \
+  ../include/asm/segment.h 
+tty_io.s tty_io.o : tty_io.c ../include/ctype.h ../include/errno.h \
+  ../include/signal.h ../include/sys/types.h ../include/cqx/sched.h \
+  ../include/cqx/head.h ../include/cqx/fs.h ../include/cqx/mm.h \
+  ../include/cqx/tty.h ../include/termios.h ../include/asm/segment.h \
+  ../include/asm/system.h 
+vsprintf.s vsprintf.o : vsprintf.c ../include/stdarg.h ../include/string.h 
