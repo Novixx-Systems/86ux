@@ -1,7 +1,5 @@
 #
 # Makefile for 86ux.
-# If you don't have '-mstring-insns' in your gcc (and nobody but me has :-)
-# remove them from the CFLAGS defines.
 #
 
 ifneq (,$(wildcard ./include/cqx/autoconf.h))
