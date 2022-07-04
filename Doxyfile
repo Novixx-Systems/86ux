@@ -10,6 +10,7 @@ ALLOW_UNICODE_NAMES    = YES
 OUTPUT_LANGUAGE        = English
 EXCLUDE                = include/cqx/config.h
 EXCLUDE                = include/cqx/autoconf.h
+HTML_EXTRA_STYLESHEET  = Documentation/style.css
 
 EXAMPLE_PATH           = .
 
