@@ -8,7 +8,7 @@ _start:
    mov ebx, 1
    mov ecx, msg
    mov edx, len
-   int 0x96
+   int 0x80
    mov al, 1
    mov ebx, 0
-   int 0x96
+   int 0x80

@@ -140,7 +140,7 @@
 type name(void) \
 { \
 type __res; \
-__asm__ volatile ("int $0x96" \
+__asm__ volatile ("int $0x80" \
 	: "=a" (__res) \
 	: "0" (__NR_##name)); \
 if (__res >= 0) \
@@ -153,7 +153,7 @@ return -1; \
 type name(atype a) \
 { \
 type __res; \
-__asm__ volatile ("int $0x96" \
+__asm__ volatile ("int $0x80" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"b" (a)); \
 if (__res >= 0) \
@@ -166,7 +166,7 @@ return -1; \
 type name(atype a,btype b) \
 { \
 type __res; \
-__asm__ volatile ("int $0x96" \
+__asm__ volatile ("int $0x80" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"b" (a),"c" (b)); \
 if (__res >= 0) \
@@ -179,7 +179,7 @@ return -1; \
 type name(atype a,btype b,ctype c) \
 { \
 type __res; \
-__asm__ volatile ("int $0x96" \
+__asm__ volatile ("int $0x80" \
 	: "=a" (__res) \
 	: "0" (__NR_##name),"b" (a),"c" (b),"d" (c)); \
 if (__res<0) \
