@@ -104,8 +104,8 @@ int main(void)		/*!The startup routine assumes (well, ...) this */
 	return 0;
 }
 
-static char * argv[] = { "/prg/sh",NULL };
-static char * envp[] = { "HOME=/home","PATH=/prg","PWD=/", NULL }; // We start at the root folder
+static char * argv[] = { "/bin/sh",NULL };
+static char * envp[] = { "HOME=/root","PATH=/bin","PWD=/", NULL }; // We start at the root folder
 
 void init(void)
 {
@@ -127,7 +127,7 @@ void init(void)
 		(void) dup(0);
 		(void) dup(0);
 		
-		_exit(execve("/prg/sh",argv,envp));
+		_exit(execve("/bin/sh",argv,envp));
 	}
 	wait(&i);
 	sync();
